@@ -1,15 +1,18 @@
-class SaveMiddleFile(object):
-    def __init__(self, data: iter, seq: list, path: str):
-        self.seq = seq
-        self.data = data
-        self.path = path
+def format_result(data, seq):
+    if len(seq) == 1:
+        return seq[0].join(data)
+    else:
+        return seq[0].join([format_result(i, seq[1:]) for i in data])
 
-    def save(self):
-        seq_len = len(self.seq)
-        if seq_len == 1:
-            string = self.seq[0].join(self.data)
-        elif seq_len == 2:
-            string = self.seq[0].join([self.seq[1].join(i) for i in self.data])
-        else:
-            string = self.seq[0].join([self.seq[1].join([self.seq[2].join(i) for i in j]) for j in self.data])
-        return string
+
+def foo(data, seq):
+    if len(seq) == 1:
+        return data.split(seq[0])
+    else:
+        return [foo(i, seq[1:]) for i in data.split(seq[0])]
+
+
+def load_from_middle(seq, path):
+    with open(path, "r") as f:
+        string = "".join([i for i in f.readlines()])
+    return foo(string, seq)

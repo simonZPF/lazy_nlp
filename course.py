@@ -29,6 +29,9 @@ class Course(object):
         if self.debug_flag:
             print(*args, **kwargs)
 
+    def statistic_info(self, data):
+        return len(data)
+
 
 class CleanText(Course):
     PUNC = r"[↓：\|丨，\_《》、；‘’＂“”【「】」·@￥（）—\,\<\.\>\/\;\:\'\"\[\]\{\}\~\`\@\#\$\%\^\&\*\(\)\-\=\+]"
@@ -105,7 +108,7 @@ class CutClause(Course):
     output_key = "clauses"
     input_type = "string"
     output_type = "StrVector"
-    seq = ["\n", "\n"]
+    seq = ["\n\n", "\n"]
 
     def run(self, paragraph: str, main_part: StrVector = None, interference: StrVector = None) -> StrVector:
         # 分句
@@ -140,6 +143,10 @@ class Tokenizer(Course):
     def run(self, sentence_list: StrVector) -> StrVector_2:
         return [jieba.lcut(sentence) for sentence in sentence_list]
 
+    def statistic_info(self, data):
+        return sum(map(len, data))
+
+
 
 class HandleToken(Course):
     output_key = "clean tokens"
@@ -166,9 +173,12 @@ class HandleToken(Course):
             for token in tokens:
                 if token in self.stopwords:
                     continue
-                if self.is_number(token):
-                    token = '<num>'
+                # if self.is_number(token):
+                #     token = '<num>'
                 t_list.append(token)
             if t_list:
                 r_list.append(t_list)
         return r_list
+
+    def statistic_info(self, data):
+        return sum(map(len, data))
